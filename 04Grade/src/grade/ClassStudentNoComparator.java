@@ -1,0 +1,25 @@
+package grade;
+
+import java.util.Comparator;
+
+public class ClassStudentNoComparator implements Comparator<Student> {
+
+	@Override
+	public int compare(Student o1, Student o2) {
+		// TODO Auto-generated method stub
+		if(o1.getClassNo()>o2.getClassNo()){
+			return 1;
+		}else if(o1.getClassNo()<o2.getClassNo()){
+			return -1;
+		}else{
+			if(o1.getStudentNo()>o2.getStudentNo()){
+				return 1;
+			}else if(o1.getStudentNo()<o2.getStudentNo()){
+				return -1;
+			}else{
+				return 0;
+			}
+		}
+	}
+
+}

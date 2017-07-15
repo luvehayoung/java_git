@@ -1,0 +1,138 @@
+package grade;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+public class Grade {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		ArrayList<Student> list= new ArrayList<Student>();
+
+		Scanner sc = null;
+		
+		try{
+			sc = new Scanner(new File("scoredata.txt"));
+		}catch(Exception e){
+			System.out.println(args[0]+"-지정하신 파일을 찾을 수 없습니다.");
+			System.exit(0);
+		}
+		
+		while(sc.hasNextLine()){
+			String nextLine = sc.nextLine();
+			String[] arr = nextLine.split(",");
+			
+			list.add(new Student(arr[0], Integer.valueOf(arr[1]), Integer.valueOf(arr[2]), Integer.valueOf(arr[3]), Integer.valueOf(arr[4]), Integer.valueOf(arr[5])));
+			
+		}
+
+		
+		/*
+		list.add(new Student("남궁성",3,2,100,60,100));
+		list.add(new Student("남궁성",3,1,100,60,100));
+		list.add(new Student("이하영",3,3,90,100,100));
+		list.add(new Student("이하영",1,2,90,100,100));
+		list.add(new Student("김윤나",1,3,80,10,100));
+		list.add(new Student("김윤나",2,1,80,10,100));
+		list.add(new Student("박모씨",2,3,50,50,100));
+		list.add(new Student("박모씨",2,4,50,50,100));
+		list.add(new Student("박모씨",2,2,100,50,100));
+		*/
+//		System.out.println("[반별 총점 높은 순으로 정렬]");
+//		Collections.sort(list, new ClassTotalComparator());
+//		printList(list);
+//		
+//		System.out.println();
+//		
+//		System.out.println("[반, 번호 수능로 정렬]");
+//		Collections.sort(list, new ClassStudentNoComparator());
+//		printList(list);
+		
+		calculateSchoolRank(list);
+		calculateClassRank(list);
+		printList(list);
+	}
+	
+	public static void calculateClassRank(ArrayList<Student> list){
+		Collections.sort(list, new ClassTotalComparator());
+		int prevClassNo = -1;
+		int prevRank = -1;	//이전 반등수
+		int prevTotal = -1; //이전 총점
+		int length = list.size();
+
+		prevClassNo = list.get(0).getClassNo();
+		prevTotal = list.get(0).getTotal();
+		list.get(0).setClassRank(1);
+		prevRank = 1;
+			
+		for(int i=1; i < length; i++){
+			if(prevClassNo == list.get(i).getClassNo()){
+				if(prevTotal != list.get(i).getTotal()){
+					list.get(i).setClassRank(prevRank+1);
+					
+				}else{
+					list.get(i).setClassRank(list.get(i-1).getClassRank());
+					
+				}
+				prevRank++;
+			}else{
+				prevClassNo = list.get(i).getClassNo();
+				prevTotal = list.get(i).getTotal();
+				list.get(i).setClassRank(1);
+				prevRank = 1;
+//				if(prevTotal == list.get(i).getTotal()){
+//					list.get(i).setClassRank(prevRank);
+//				}else{
+//					list.get(i).setClassRank(list.get(i-1).getClassRank());
+//					prevRank++;
+//				}
+			}
+			prevTotal = list.get(i).getTotal();
+		}
+		
+	}
+	
+	public static void calculateSchoolRank(ArrayList<Student> list){
+		Collections.sort(list);
+		
+		int prevRank = -1;	//이전 전교등수
+		int prevTotal = -1; //이전 총점
+		int length = list.size();
+		
+		list.get(0).setSchoolRank(1);
+		
+//		System.out.println(list.get(0).getSchoolRank());
+		
+		prevRank = 1;
+		prevTotal = list.get(0).getTotal();
+		
+		for(int i=1; i<length;i++){
+			if(prevTotal==list.get(i).getTotal()){
+				list.get(i).setSchoolRank(prevRank);
+			}else{
+				list.get(i).setSchoolRank(i+1);
+				prevRank = i+1;
+			}
+			prevTotal = list.get(i).getTotal();
+		}
+		
+		
+		
+		
+	}
+	
+	
+	public static void printList(ArrayList<Student> list) {
+		// TODO Auto-generated method stub
+		System.out.println("이름\t반\t번호\t국어\t수학\t영어\t총점\t전교등수\t반등수");
+		System.out.println("=================================================================");
+		for(Student s:list){
+//			System.out.println(s);
+			System.out.println(s.toString());
+		}
+		System.out.println("=================================================================");
+	}
+
+}

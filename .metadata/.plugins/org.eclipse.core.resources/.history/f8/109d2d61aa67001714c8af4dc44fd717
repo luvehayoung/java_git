@@ -1,0 +1,30 @@
+package grade;
+
+public class Student {
+	public String name;
+	public int classNo;
+	public int studentNo;
+	public int Korean;
+	public int Math;
+	public int English;
+	public int Total;
+	
+	public Student(String name, int classNo, int studentNo, int Korean, int Math, int English) {
+		// TODO Auto-generated constructor stubr
+		this.name = name;
+		this.classNo = classNo;
+		this.studentNo = studentNo;
+		this.Korean = Korean;
+		this.Math = Math;
+		this.English = English;
+		this.Total = this.Korean + this.Math + this.English;
+	}
+
+//	@Override
+//	public String toString() {
+//		// TODO Auto-generated method stub
+//			
+//		return String.format("%s\t%d\t%d\t%d\t%d\t%d\t%d\t",name, classNo, studentNo, Korean, Math, English, Total);
+//		
+//	}
+}

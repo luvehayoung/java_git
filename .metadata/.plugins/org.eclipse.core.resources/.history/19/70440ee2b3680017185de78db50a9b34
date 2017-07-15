@@ -1,0 +1,452 @@
+package edit;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.TreeMap;
+
+public class TextEdit extends Frame implements WindowListener {
+
+	TextArea ta;
+	TextField tfParam1, tfParam2;
+	Panel pNorth, pSouth;
+	Label lb1, lb2;
+	
+	String[] btnName = {
+		"Undo",
+		"짝수줄삭제",	//btn[0] - 짝수줄을 삭제하는 기능
+		"문자삭제",		//param1에 지어된 문자들을 삭제하는 기능
+		"trim",
+		"빈줄삭제",
+		"접두사추가", 	//params1과 param2의문자열을 각 라인의 앞뒤에 붙이는기능
+		"substring",
+		"substring2",	//wlwjdehls answkduffh enffjTkdls qnqnsdmf skarlrh wprjgksms rlsmd
+		"distinct",
+		"distinct2",
+		"패턴적용"
+	};
+	
+	Button[] btn =new Button[btnName.length];
+	
+	private final String CR_LF = System.getProperty("line.separator"); //개행문자
+	
+	private String prevText = ""; //textArea ta의 내용을 저장하기 위한 변수
+
+	public TextEdit(String title) {
+		// TODO Auto-generated constructor stub
+		super(title);
+		lb1 = new Label("param1:",Label.RIGHT);
+		lb2 = new Label("param2:",Label.RIGHT);
+		tfParam1 = new TextField(15);
+		tfParam2 = new TextField(15);
+		
+		ta = new TextArea();
+		pNorth = new Panel();
+		pSouth = new Panel();
+		
+		for(int i=0; i<btn.length; i++){
+			btn[i] = new Button(btnName[i]);
+		}
+		
+		pNorth.setLayout(new FlowLayout());
+		pNorth.add(lb1);
+		pNorth.add(tfParam1);
+		pNorth.add(lb2);
+		pNorth.add(tfParam2);
+		
+		pSouth.setLayout(new GridLayout(2,10));
+		
+		for(int i=0;i<btn.length;i++){
+			pSouth.add(btn[i]);
+		}
+		
+		add(pNorth, "North");
+		add(ta, "Center");
+		add(pSouth,"South");
+		
+		setBounds(100,100,600,300);
+		ta.requestFocus();
+		registerEventHandler();
+		setVisible(true);
+		
+		
+		
+	}
+
+	private void registerEventHandler(){
+		addWindowListener(this);
+		
+		int n=0;
+	
+		//undo
+		btn[n++].addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String curText = ta.getText();
+				
+				if(!prevText.equals("")){
+					ta.setText(prevText);
+				}//공백일때는아무것도 안한상태
+				
+				prevText = curText;
+			}
+			
+		});
+		
+		//짝수줄삭
+		btn[n++].addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+				
+				Scanner sc = new Scanner(curText);
+				
+				int i=1;
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					if(i%2==1){
+						sb.append(line).append(CR_LF);
+					}
+					i++;
+				}
+				
+				ta.setText(sb.toString());
+				
+			}
+			
+			
+		});
+		
+		//param1에 지정된 문자를 삭제하는 기능 문자열이아니었네..ㅋ
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String curText = ta.getText();
+				StringBuffer sb = new StringBuffer(curText.length());
+				
+				prevText = curText;
+				
+				String pa = tfParam1.getText();
+				
+				/* 얘는문자열 삭제
+				curText = curText.replace(pa, "");
+				
+				sb.append(curText);
+				ta.setText(sb.toString());
+				*/
+				
+				if("".equals(pa)) return;
+				
+				for(int i=0; i<curText.length();i++){
+					char ch = curText.charAt(i);
+					
+					if(pa.indexOf(ch)==-1)
+						sb.append(ch);
+				}
+				
+				ta.setText(sb.toString());
+			}
+		});
+		
+		//trim
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+				
+				Scanner sc = new Scanner(curText);
+				
+				int i=1;
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					sb.append(line.trim()).append(CR_LF);
+					i++;
+				}
+				
+				ta.setText(sb.toString());
+				
+			}
+		});
+		
+		//빈줄 삭제
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+				
+				Scanner sc = new Scanner(curText);
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					if(line.equals(""));
+					else sb.append(line).append(CR_LF);
+				}
+				
+				ta.setText(sb.toString());
+			}
+		});
+		
+		//접두사추가
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String curText = ta.getText();
+				StringBuffer sb = new StringBuffer(curText.length());
+				
+				prevText = curText;
+				
+				String par_1 = tfParam1.getText();
+				String par_2 = tfParam2.getText();
+				
+				Scanner sc = new Scanner(curText);
+				
+				while(sc.hasNextLine()){
+					String line = sc.nextLine();
+					sb.append(par_1+line+par_2).append(CR_LF);
+				}
+				
+				ta.setText(sb.toString());
+				
+			}
+		 });
+		
+		//substring
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+				
+				String par_1 = tfParam1.getText();
+				String par_2 = tfParam2.getText();
+				
+				Scanner sc = new Scanner(curText);
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					line = line.substring(par_1.length());
+					line = line.substring(0,line.length()-par_2.length());
+					sb.append(line).append(CR_LF);
+				}
+				
+				ta.setText(sb.toString());
+	
+			}
+		});
+		
+		//substring2
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+				
+				String par_1 = tfParam1.getText();
+				String par_2 = tfParam2.getText();
+				
+				Scanner sc = new Scanner(curText);
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					int first = line.indexOf(par_1);
+					int last = line.indexOf(par_2);
+					
+					line = line.substring(first+par_1.length(), last-1);
+					
+					sb.append(line).append(CR_LF);
+				}
+				
+				ta.setText(sb.toString());
+	
+			}
+		});
+		
+		//distinct
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				HashSet<String> disLine = new HashSet<String>();
+				prevText = curText;
+				
+				Scanner sc = new Scanner(curText);
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					disLine.add(line);
+				}
+				ArrayList<String> arr = new ArrayList(disLine);
+				Collections.sort(arr);
+				
+				for(int i=0; i<arr.size(); i++){
+					sb.append(arr.get(i)).append(CR_LF);
+				}
+				
+				ta.setText(sb.toString());
+	
+			}
+		});
+
+		//distinct2
+		btn[n++].addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				TreeMap<String, Integer> disLine = new TreeMap<String, Integer>();
+				prevText = curText;
+				
+				Scanner sc = new Scanner(curText);
+				
+				String par_1 = tfParam1.getText();
+				
+				while(sc.hasNext()){
+					String line = sc.nextLine();
+					//있을때
+					if(disLine.containsKey(line)){
+						disLine.put(line, disLine.get(line)+1);
+					}
+					//없을때
+					else{
+						disLine.put(line, 1);
+					}
+				}
+				
+				String sep;
+				if(par_1.equals("")){
+					sep=",";
+				}else{
+					sep=par_1;
+				}
+				
+				Iterator<String> keys = disLine.keySet().iterator();
+				while(keys.hasNext()){
+					String key = keys.next();
+					sb.append(key).append(sep).append(disLine.get(key)).append(CR_LF);
+				}
+								
+				ta.setText(sb.toString());
+	
+			}
+		});
+		
+		//패턴적용
+		btn[n++].addActionListener(new ActionListener() {
+					
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuffer sb = new StringBuffer();
+				String curText = ta.getText();
+				prevText = curText;
+								
+				String pattern = tfParam1.getText();
+				String delimiter = tfParam2.getText();
+				
+				if(delimiter.length()==0) delimiter =",";
+				
+				Scanner sc = new Scanner(curText);
+								
+				while(sc.hasNext()){
+					String[] arr = sc.nextLine().split(delimiter);
+					String result = MessageFormat.format(pattern, arr);
+					sb.append(result).append(CR_LF);
+				}
+								
+				ta.setText(sb.toString());
+				
+			}
+		});
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		TextEdit win = new TextEdit("Text Tool");
+		win.setVisible(true);
+		
+	}
+	
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		e.getWindow().setVisible(false);
+		e.getWindow().dispose();
+		System.exit(0);
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

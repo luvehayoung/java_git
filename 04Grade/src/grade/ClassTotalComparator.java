@@ -1,0 +1,26 @@
+package grade;
+
+import java.util.Comparator;
+
+public class ClassTotalComparator implements Comparator<Student> {
+
+	@Override
+	public int compare(Student o1, Student o2) {
+		// TODO Auto-generated method stub
+		if(o1.getClassNo()>o2.getClassNo()){
+			return 1;
+		}else if(o1.getClassNo()<o2.getClassNo()){
+			return -1;
+		}else{
+			if(o1.getTotal()>o2.getTotal()){
+				return -1;
+			}else if(o1.getTotal()<o2.getTotal()){
+				return 1;
+			}else{
+				return 0;
+			}
+		}
+
+	}
+
+}
